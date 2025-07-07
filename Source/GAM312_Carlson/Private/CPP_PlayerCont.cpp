@@ -1,0 +1,123 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#include "CPP_PlayerCont.h"
+#include "EnhancedInputComponent.h"
+#include "EnhancedInputSubsystems.h"
+
+
+ACPP_PlayerCont::ACPP_PlayerCont()
+{
+}
+
+// On event start
+void ACPP_PlayerCont::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// Set Chara ref
+	PlayerChara = Cast<ACPP_PlayerChara>(GetCharacter());
+
+	// Check Player cont valid
+	if (ACPP_PlayerCont* PC = Cast<ACPP_PlayerCont>(this))
+	{
+		// Get subsystem and set to local player
+		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PC->GetLocalPlayer()))
+		{
+			// Set Input mapping context
+			if (PlayerInputContext)
+			{
+				Subsystem->AddMappingContext(PlayerInputContext, 0);
+			}
+		}
+	}
+}
+
+void ACPP_PlayerCont::SetupInputComponent()
+{
+	// Set up actual inputs
+	Super::SetupInputComponent();
+	if (ACPP_PlayerCont* PC = Cast<ACPP_PlayerCont>(this))
+	{
+		if (UEnhancedInputComponent* Subsystem = Cast<UEnhancedInputComponent>(InputComponent))
+		{
+			if (MoveAction)
+			{
+				Subsystem->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACPP_PlayerCont::Move);
+			}
+			if (LookAction)
+			{
+				Subsystem->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACPP_PlayerCont::Look);
+			}
+			if (JumpAction)
+			{
+				Subsystem->BindAction(JumpAction, ETriggerEvent::Started, this, &ACPP_PlayerCont::Jump);
+			}
+			if (InteractAction)
+			{
+				Subsystem->BindAction(InteractAction, ETriggerEvent::Started, this, &ACPP_PlayerCont::Interact);
+			}
+		}
+	}
+}
+
+void ACPP_PlayerCont::Move(const FInputActionValue& Value)
+{
+	FVector2D MovementVector = Value.Get<FVector2D>();
+
+	// Validate Controlled
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		// Get Rotation of controller
+		FRotator CameraRotation = GetControlRotation();
+		FRotator YawRotation(0.f, CameraRotation.Yaw, 0.f); // Get Yaw and ignore Pitch
+
+		// Get Forward and Right Direction Vectors
+		FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+
+		// Add Movement Input
+		ControlledPawn->AddMovementInput(ForwardDirection, MovementVector.Y);
+		ControlledPawn->AddMovementInput(RightDirection, MovementVector.X);
+	}
+}
+
+void ACPP_PlayerCont::Look(const FInputActionValue& Value)
+{
+	// Check if looking
+	FVector2D LookAxisVector = Value.Get<FVector2D>();
+
+	// Validate Controlled
+	if (APawn* ControlledPawn = GetPawn())
+	{
+		// Add Yaw and Pitch Input to camera
+		AddYawInput(LookAxisVector.X);
+		AddPitchInput(LookAxisVector.Y);
+	}
+}
+
+void ACPP_PlayerCont::Jump(const FInputActionValue& Value)
+{
+	if (PlayerChara)
+	{
+		PlayerChara->Jump();
+	}
+}
+
+void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
+{
+	// Line Trace set to 1000 units
+	FVector Start = PlayerChara->CameraComponent->GetComponentLocation();
+	FVector End = Start + (PlayerChara->CameraComponent->GetForwardVector() * 1000.0f);
+
+	FHitResult HitResult;
+	FCollisionQueryParams CollisionParams;
+	CollisionParams.AddIgnoredActor(PlayerChara); // Ignore the player character
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
+	{
+		if (HitResult.GetActor())
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Interacting with: %s"), *HitResult.GetActor()->GetName()));
+		}
+	}
+}
