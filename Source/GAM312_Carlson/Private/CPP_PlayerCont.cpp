@@ -112,12 +112,54 @@ void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 	FHitResult HitResult;
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(PlayerChara); // Ignore the player character
+	CollisionParams.bTraceComplex = true; // Use complex collision for better accuracy
+	CollisionParams.bReturnFaceIndex = true; // Return face index for more detailed hit information
 
+	// Start the line trace
 	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
 	{
 		if (HitResult.GetActor())
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Interacting with: %s"), *HitResult.GetActor()->GetName()));
+
+			// Cast the hit actor to Resource_M
+			AResource_M* Resource = Cast<AResource_M>(HitResult.GetActor());
+
+			// If the hit actor is a resource
+			if (PlayerChara->Stamina >= 5.0f)
+			{
+				if (Resource)
+				{
+					// Get Resource Name and Amount
+					FString hitName = Resource->resourceName;
+					int resourceValue = Resource->resourceAmount;
+
+					// Damage Resource
+					Resource->totalResource -= resourceValue;
+
+					// Give to player
+					if (Resource->totalResource >= resourceValue)
+					{
+						PlayerChara->GiveResource(resourceValue, hitName);
+
+						check(GEngine != nullptr);
+						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Gave %d of %s to player"), resourceValue, *hitName)); // debug
+					
+						// Spawn hit marker
+						UGameplayStatics::SpawnDecalAtLocation(GetWorld(), hitDecal, FVector(10.0f, 10.0f, 10.0f), HitResult.Location, FRotator(-90, 0, 0), 0.5f);
+
+						PlayerChara->SetStamina(-5.0f); // Decrease stamina by 5
+					}
+
+					// If resource is depleted, destroy it
+					else
+					{
+						Resource->Destroy();
+						check(GEngine != nullptr);
+						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Destroyed %s"), *hitName)); // debug
+					}
+				}
+			}
 		}
 	}
 }
