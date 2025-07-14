@@ -7,6 +7,8 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "CPP_PlayerChara.h"
+#include "Resource_M.h"
+#include "Kismet/GameplayStatics.h"
 #include "CPP_PlayerCont.generated.h"
 
 /**
@@ -42,6 +44,10 @@ protected:
 	// Interact
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractAction;
+
+	// Hit Marker
+	UPROPERTY(EditAnywhere, Category = "Hit Marker")
+	UMaterialInterface* hitDecal;
 	
 // For posession purposes
 public:
@@ -51,7 +57,7 @@ public:
 	UPROPERTY()
 	ACPP_PlayerChara* PlayerChara;
 
-// Movement Functions
+// Action Functions
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
