@@ -45,6 +45,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	UInputAction* InteractAction;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
+	UInputAction* RotateBuildingAction;
+
 	// Hit Marker
 	UPROPERTY(EditAnywhere, Category = "Hit Marker")
 	UMaterialInterface* hitDecal;
@@ -62,6 +65,7 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void Jump(const FInputActionValue& Value);
+	void Rotate(const FInputActionValue& Value);
 	void Interact(const FInputActionValue& Value);
 
 };

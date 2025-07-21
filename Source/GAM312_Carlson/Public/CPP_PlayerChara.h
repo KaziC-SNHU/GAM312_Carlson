@@ -6,6 +6,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Resource_M.h"
+#include "BuildingPart.h"
 #include "CPP_PlayerChara.generated.h"
 
 UCLASS()
@@ -20,6 +21,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 public:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera")
@@ -49,6 +52,18 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Resources")
 	TArray<FString> ResourcesNames;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building Supplies")
+	TArray<int> BuildingSuppliesArray;
+
+	UPROPERTY()
+	bool isBuilding;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	TSubclassOf<ABuildingPart> BuildPartClass;
+
+	UPROPERTY()
+	ABuildingPart* spawnedPart;
+
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float amount);
 
@@ -63,4 +78,14 @@ public:
 
 	UFUNCTION()
 	void GiveResource(float amount, FString resource);
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateResources(float woodAmount, float stoneAmount, FString buildingObject);
+
+	UFUNCTION(BlueprintCallable)
+	void SpawnBuilding(int buildingID, bool& isSuccessful);
+
+	UFUNCTION()
+	void RotateBuilding();
+
 };
