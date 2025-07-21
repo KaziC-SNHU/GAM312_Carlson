@@ -16,6 +16,7 @@ ACPP_PlayerChara::ACPP_PlayerChara()
 
 	//  Setting up an "inventory"
 	ResourcesArray.SetNum(3); // Set size of ResourcesArray
+	BuildingSuppliesArray.SetNum(3); // Set size of BuildingSuppliesArray
 	ResourcesNames.Add(TEXT("Wood"));
 	ResourcesNames.Add(TEXT("Stone"));
 	ResourcesNames.Add(TEXT("Strawberry"));
@@ -29,6 +30,23 @@ void ACPP_PlayerChara::BeginPlay()
 	FTimerHandle StatsTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(StatsTimerHandle, this, &ACPP_PlayerChara::DecreaseStats, 1.0f, true);
 
+}
+
+void ACPP_PlayerChara::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (isBuilding)
+	{
+		if (spawnedPart)
+		{
+			FVector StartLocation = CameraComponent->GetComponentLocation();
+			FVector Direction = CameraComponent->GetForwardVector();
+			FVector EndLocation = StartLocation + (Direction * 500.0f);
+			spawnedPart->SetActorLocation(EndLocation);
+		}
+		
+	}
 }
 
 // Adjust Health
@@ -96,5 +114,61 @@ void ACPP_PlayerChara::GiveResource(float amount, FString resource)
 		UE_LOG(LogTemp, Warning, TEXT("Unknown resource type: %s"), *resource);
 		return;
 	}
+}
+
+void ACPP_PlayerChara::UpdateResources(float woodAmount, float stoneAmount, FString buildingObject)
+{
+	if (woodAmount <= ResourcesArray[0] && stoneAmount <= ResourcesArray[1])
+	{
+		ResourcesArray[0] -= woodAmount;
+		ResourcesArray[1] -= stoneAmount;
+
+		if (buildingObject == "Wall")
+		{
+			BuildingSuppliesArray[0] += 1;
+		}
+
+		if (buildingObject == "Floor")
+		{
+			BuildingSuppliesArray[1] += 1;
+		}
+
+		if (buildingObject == "Ceiling")
+		{
+			BuildingSuppliesArray[2] += 1;
+		}
+	}
+}
+
+void ACPP_PlayerChara::SpawnBuilding(int buildingID, bool& isSuccessful)
+{
+	if (!isBuilding) // If not already building
+	{
+		if (BuildingSuppliesArray[buildingID] > 0) // Check for building supplies
+		{
+			isBuilding = true;
+			FActorSpawnParameters spawnParams;
+			FVector StartLocation = CameraComponent->GetComponentLocation();
+			FVector Direction = CameraComponent->GetForwardVector();
+			FVector EndLocation = StartLocation + (Direction * 500.0f);
+			FRotator myRot(0, 0, 0);
+
+			BuildingSuppliesArray[buildingID] -= 1;
+
+			spawnedPart = GetWorld()->SpawnActor<ABuildingPart>(BuildPartClass, EndLocation, myRot, spawnParams);
+
+			isSuccessful = true;
+		}
+
+		else // Not enough supplies
+		{
+			isSuccessful = false;
+		}
+	}
+}
+
+void ACPP_PlayerChara::RotateBuilding()
+{
+	spawnedPart->AddActorWorldRotation(FRotator(0, 90, 0));
 }
 

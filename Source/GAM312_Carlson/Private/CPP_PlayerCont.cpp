@@ -56,6 +56,10 @@ void ACPP_PlayerCont::SetupInputComponent()
 			{
 				Subsystem->BindAction(InteractAction, ETriggerEvent::Started, this, &ACPP_PlayerCont::Interact);
 			}
+			if (RotateBuildingAction)
+			{
+				Subsystem->BindAction(RotateBuildingAction, ETriggerEvent::Started, this, &ACPP_PlayerCont::Rotate);
+			}
 		}
 	}
 }
@@ -103,6 +107,16 @@ void ACPP_PlayerCont::Jump(const FInputActionValue& Value)
 	}
 }
 
+void ACPP_PlayerCont::Rotate(const FInputActionValue& Value)
+{
+	if (PlayerChara->isBuilding)
+	{
+		FRotator CurrentRotation = PlayerChara->spawnedPart->GetActorRotation();
+		CurrentRotation.Yaw += 90.0f; // Rotate 90 degrees on Yaw
+		PlayerChara->spawnedPart->SetActorRotation(CurrentRotation);
+	}
+}
+
 void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 {
 	// Line Trace set to 1000 units
@@ -116,50 +130,59 @@ void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 	CollisionParams.bReturnFaceIndex = true; // Return face index for more detailed hit information
 
 	// Start the line trace
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
+	if (!PlayerChara->isBuilding)
 	{
-		if (HitResult.GetActor())
+		if (GetWorld()->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility, CollisionParams))
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Interacting with: %s"), *HitResult.GetActor()->GetName()));
-
-			// Cast the hit actor to Resource_M
-			AResource_M* Resource = Cast<AResource_M>(HitResult.GetActor());
-
-			// If the hit actor is a resource
-			if (PlayerChara->Stamina >= 5.0f)
+			if (HitResult.GetActor())
 			{
-				if (Resource)
+				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Interacting with: %s"), *HitResult.GetActor()->GetName()));
+
+				// Cast the hit actor to Resource_M
+				AResource_M* Resource = Cast<AResource_M>(HitResult.GetActor());
+
+				// If the hit actor is a resource
+				if (PlayerChara->Stamina >= 5.0f)
 				{
-					// Get Resource Name and Amount
-					FString hitName = Resource->resourceName;
-					int resourceValue = Resource->resourceAmount;
-
-					// Damage Resource
-					Resource->totalResource -= resourceValue;
-
-					// Give to player
-					if (Resource->totalResource >= resourceValue)
+					if (Resource)
 					{
-						PlayerChara->GiveResource(resourceValue, hitName);
+						// Get Resource Name and Amount
+						FString hitName = Resource->resourceName;
+						int resourceValue = Resource->resourceAmount;
 
-						check(GEngine != nullptr);
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Gave %d of %s to player"), resourceValue, *hitName)); // debug
-					
-						// Spawn hit marker
-						UGameplayStatics::SpawnDecalAtLocation(GetWorld(), hitDecal, FVector(10.0f, 10.0f, 10.0f), HitResult.Location, FRotator(-90, 0, 0), 0.5f);
+						// Damage Resource
+						Resource->totalResource -= resourceValue;
 
-						PlayerChara->SetStamina(-5.0f); // Decrease stamina by 5
-					}
+						// Give to player
+						if (Resource->totalResource >= resourceValue)
+						{
+							PlayerChara->GiveResource(resourceValue, hitName);
 
-					// If resource is depleted, destroy it
-					else
-					{
-						Resource->Destroy();
-						check(GEngine != nullptr);
-						GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Destroyed %s"), *hitName)); // debug
+							check(GEngine != nullptr);
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Gave %d of %s to player"), resourceValue, *hitName)); // debug
+
+							// Spawn hit marker
+							UGameplayStatics::SpawnDecalAtLocation(GetWorld(), hitDecal, FVector(10.0f, 10.0f, 10.0f), HitResult.Location, FRotator(-90, 0, 0), 0.5f);
+
+							PlayerChara->SetStamina(-5.0f); // Decrease stamina by 5
+						}
+
+						// If resource is depleted, destroy it
+						else
+						{
+							Resource->Destroy();
+							check(GEngine != nullptr);
+							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Destroyed %s"), *hitName)); // debug
+						}
 					}
 				}
 			}
 		}
+
+	}
+
+	else
+	{
+		PlayerChara->isBuilding = false;
 	}
 }
