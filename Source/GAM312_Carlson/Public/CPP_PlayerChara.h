@@ -7,6 +7,7 @@
 #include "GameFramework/Character.h"
 #include "Resource_M.h"
 #include "BuildingPart.h"
+#include "W_PlayerWidget.h"
 #include "CPP_PlayerChara.generated.h"
 
 UCLASS()
@@ -63,6 +64,9 @@ public:
 
 	UPROPERTY()
 	ABuildingPart* spawnedPart;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UW_PlayerWidget* playerUI;
 
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float amount);

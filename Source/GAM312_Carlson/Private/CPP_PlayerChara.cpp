@@ -36,6 +36,8 @@ void ACPP_PlayerChara::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	playerUI->UpdateBars(Health, Hunger, Stamina);
+
 	if (isBuilding)
 	{
 		if (spawnedPart)
@@ -56,6 +58,11 @@ void ACPP_PlayerChara::SetHealth(float amount)
 	{
 		Health += amount;
 	}
+
+	else if (Health + amount >= 100)
+	{
+		Health = 100.0f; // Cap health at 100
+	}
 }
 
 // Adjust Hunger
@@ -66,6 +73,11 @@ void ACPP_PlayerChara::SetHunger(float amount)
 		Hunger += amount;
 	}
 
+	else if (Hunger + amount >= 100)
+	{
+		Hunger = 100.0f; // Cap health at 100
+	}
+
 }
 
 // Adjust Stamina
@@ -74,6 +86,11 @@ void ACPP_PlayerChara::SetStamina(float amount)
 	if (Stamina + amount < 100 && Stamina + amount > -1)
 	{
 		Stamina += amount;
+	}
+
+	else if (Stamina + amount >= 100)
+	{
+		Stamina = 100.0f; // Cap health at 100
 	}
 }
 
