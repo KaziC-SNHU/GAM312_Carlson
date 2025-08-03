@@ -8,6 +8,7 @@
 #include "Resource_M.h"
 #include "BuildingPart.h"
 #include "W_PlayerWidget.h"
+#include "W_ObjWidget.h"
 #include "CPP_PlayerChara.generated.h"
 
 UCLASS()
@@ -67,6 +68,15 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UW_PlayerWidget* playerUI;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UW_ObjWidget* objectiveUI;
+
+	UPROPERTY()
+	float objectsBuilt;
+
+	UPROPERTY()
+	float matsCollected;
 
 	UFUNCTION(BlueprintCallable)
 	void SetHealth(float amount);

@@ -30,6 +30,13 @@ void ACPP_PlayerChara::BeginPlay()
 	FTimerHandle StatsTimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(StatsTimerHandle, this, &ACPP_PlayerChara::DecreaseStats, 1.0f, true);
 
+	// Update objective UI
+	if (objectiveUI) 
+	{
+		objectiveUI->UpdateMatOBJ(0.0f);
+		objectiveUI->UpdateBuildOBJ(0.0f);
+	}
+
 }
 
 void ACPP_PlayerChara::Tick(float DeltaTime)

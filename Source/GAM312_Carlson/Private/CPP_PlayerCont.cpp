@@ -158,6 +158,10 @@ void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 						{
 							PlayerChara->GiveResource(resourceValue, hitName);
 
+							PlayerChara->matsCollected += resourceValue; // Update mats collected
+
+							PlayerChara->objectiveUI->UpdateMatOBJ(PlayerChara->matsCollected); // Update objective UI
+
 							check(GEngine != nullptr);
 							GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, FString::Printf(TEXT("Gave %d of %s to player"), resourceValue, *hitName)); // debug
 
@@ -184,5 +188,8 @@ void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 	else
 	{
 		PlayerChara->isBuilding = false;
+		PlayerChara->objectsBuilt += 1; // Update objects built
+
+		PlayerChara->objectiveUI->UpdateBuildOBJ(PlayerChara->objectsBuilt); // Update objective UI
 	}
 }
