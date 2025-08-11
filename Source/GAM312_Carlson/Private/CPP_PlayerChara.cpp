@@ -70,6 +70,11 @@ void ACPP_PlayerChara::SetHealth(float amount)
 	{
 		Health = 100.0f; // Cap health at 100
 	}
+
+	else if (Health + amount <= 0)
+	{
+		Health = 0.0f; // Min health at 0
+	}
 }
 
 // Adjust Hunger
@@ -82,7 +87,12 @@ void ACPP_PlayerChara::SetHunger(float amount)
 
 	else if (Hunger + amount >= 100)
 	{
-		Hunger = 100.0f; // Cap health at 100
+		Hunger = 100.0f; // Cap hunger at 100
+	}
+
+	else if (Hunger + amount <= 0)
+	{
+		Hunger = 0.0f; // Min hunger at 0
 	}
 
 }
@@ -98,6 +108,11 @@ void ACPP_PlayerChara::SetStamina(float amount)
 	else if (Stamina + amount >= 100)
 	{
 		Stamina = 100.0f; // Cap health at 100
+	}
+
+	else if (Stamina + amount <= 0)
+	{
+		Stamina = 0.0f; // Min health at 0
 	}
 }
 
