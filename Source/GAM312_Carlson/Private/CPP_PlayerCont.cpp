@@ -119,6 +119,12 @@ void ACPP_PlayerCont::Rotate(const FInputActionValue& Value)
 
 void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 {
+	/* The utilization of linear algebra is crucial in games in general,
+	* but in this particular case, it is used to determine the player's location and 
+	* perspective in the 3D game world utilizing vectors. This essentially allows the game to 
+	* track what the player is attempting to interact with and allows the gameplay loop to exist.
+	*/
+
 	// Line Trace set to 1000 units
 	FVector Start = PlayerChara->CameraComponent->GetComponentLocation();
 	FVector End = Start + (PlayerChara->CameraComponent->GetForwardVector() * 1000.0f);

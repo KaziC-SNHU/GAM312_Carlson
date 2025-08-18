@@ -9,6 +9,14 @@ ACPP_PlayerChara::ACPP_PlayerChara()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	/* Camera Libraries in gaming
+	* Camera libraries are essential in gaming as they define
+	* the player's perspective and how they are able to interact with the game world.
+	* Without a camera, players would not have access to visual feedback in the game,
+	* which could lead to confusion and a lack of engagement.
+	* A lack of camera could be useful for a few different gameplay scenarios, but in general relies on other senses,
+	* or a different form of camera.
+	*/
 	// Setup the camera component
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("CameraComponent"));
 	CameraComponent->SetupAttachment(GetMesh(), "head"); // Attach Cam to head
