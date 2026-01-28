@@ -144,13 +144,21 @@ void ACPP_PlayerCont::Interact(const FInputActionValue& Value)
 			{
 				GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Red, FString::Printf(TEXT("Interacting with: %s"), *HitResult.GetActor()->GetName()));
 
-				// Cast the hit actor to Resource_M
+				// Cast the hit actor to Resource_M or Signpost
 				AResource_M* Resource = Cast<AResource_M>(HitResult.GetActor());
+				ASignpost* Sign = Cast<ASignpost>(HitResult.GetActor());
 
-				// If the hit actor is a resource
+				// If the hit actor is valid
 				if (PlayerChara->Stamina >= 5.0f)
 				{
-					if (Resource)
+					// If it's a signpost
+					if (Sign)
+					{
+						PlayerChara->SummonHelperDeer();
+					}
+
+					// If it's a resource
+					else if (Resource)
 					{
 						// Get Resource Name and Amount
 						FString hitName = Resource->resourceName;

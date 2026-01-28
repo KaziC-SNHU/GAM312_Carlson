@@ -9,7 +9,9 @@
 #include "BuildingPart.h"
 #include "W_PlayerWidget.h"
 #include "W_ObjWidget.h"
+#include "Signpost.h"
 #include "CPP_PlayerChara.generated.h"
+
 
 UCLASS()
 class GAM312_CARLSON_API ACPP_PlayerChara : public ACharacter
@@ -102,4 +104,6 @@ public:
 	UFUNCTION()
 	void RotateBuilding();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void SummonHelperDeer();
 };

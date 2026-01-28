@@ -218,4 +218,3 @@ void ACPP_PlayerChara::RotateBuilding()
 {
 	spawnedPart->AddActorWorldRotation(FRotator(0, 90, 0));
 }
-
