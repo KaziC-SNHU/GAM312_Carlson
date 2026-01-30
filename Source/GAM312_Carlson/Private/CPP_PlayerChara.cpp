@@ -60,10 +60,24 @@ void ACPP_PlayerChara::Tick(float DeltaTime)
 			FVector StartLocation = CameraComponent->GetComponentLocation();
 			FVector Direction = CameraComponent->GetForwardVector();
 			FVector EndLocation = StartLocation + (Direction * 500.0f);
-			spawnedPart->SetActorLocation(EndLocation);
+
+			if (spawnedPart->bSnaptoGround) {
+				spawnedPart->SetActorLocation(FindGroundLocation(EndLocation));
+
+			}
+
+			else {
+				spawnedPart->SetActorLocation(EndLocation);
+			}
 		}
 		
 	}
+}
+
+FVector ACPP_PlayerChara::FindGroundLocation_Implementation(FVector Start)
+{
+
+	return Start;
 }
 
 // Adjust Health

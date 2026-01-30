@@ -30,4 +30,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UArrowComponent* PivotArrow;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bSnaptoGround;
+
 };

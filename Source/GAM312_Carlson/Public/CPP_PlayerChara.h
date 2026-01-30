@@ -28,6 +28,9 @@ protected:
 
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	FVector FindGroundLocation(FVector Start);
+
 public:	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Camera")
 	UCameraComponent* CameraComponent;
