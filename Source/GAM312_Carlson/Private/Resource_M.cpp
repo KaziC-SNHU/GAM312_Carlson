@@ -27,7 +27,11 @@ void AResource_M::BeginPlay()
 	Super::BeginPlay();
 	
 	// Get name of resource and set text to it
-	tempText = tempText.FromString(resourceName);
+	//tempText = tempText.FromString(resourceName);
+	//ResourceNameText->SetText(tempText);
+
+	// Change text to blank due to having proper models now
+	tempText = tempText.FromString(".");
 	ResourceNameText->SetText(tempText);
 }
 

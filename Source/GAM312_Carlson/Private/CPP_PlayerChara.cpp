@@ -138,7 +138,7 @@ void ACPP_PlayerChara::SetStamina(float amount)
 	}
 }
 
-// Drain Hunger / Health and regend stamina
+// Drain Hunger / Health and regen stamina
 void ACPP_PlayerChara::DecreaseStats()
 {
 	if (Hunger > 0.0f)
